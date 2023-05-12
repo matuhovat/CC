@@ -24,10 +24,7 @@ struct Box {
     }
 
     void Buy(int &money) {
-        if (money >= value) {
-            money -= value;
-            bought = true;
-        }
+        bought = true;
     }
 
     void Click(int &money) {
@@ -65,13 +62,17 @@ int main() {
     const int screenHeight = 1030;
 
     InitWindow(screenWidth, screenHeight, "Cookie Clicker");
+    InitAudioDevice();
 
-    int money = 0;
+    int money = 5000;
     int rotation = 0;
     Vector2 WinBGPos = {0, -1080,};
     Vector2 WinTextPos = {0, -1080};
 
     Texture2D cookie = LoadTexture("cookie.png");
+    Sound click = LoadSound("click.mp3");
+    Sound buzzer = LoadSound("buzzer.mp3");
+    Sound cash = LoadSound("money.mp3");
 
     Box finger = Box("Finger", 10, 400, {50, 50});
     Box robot = Box("Robot", 50, 250, {50, 220});
@@ -129,12 +130,24 @@ int main() {
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             if (CheckCollisionPointRec(GetMousePosition(), {750, 315, 400, 400})) {
+                PlaySound(click);
                 ++money;
                 dest = {960, 515, 390, 390};
             }
             for (int i = 0; i < 10; ++i) {
                 if (CheckCollisionPointRec(GetMousePosition(), {shop[i].position.x, shop[i].position.y, 400, 120})) {
-                    shop[i].Buy(money);
+                    if (!shop[i].bought) {
+                        if (money >= shop[i].value) {
+                            shop[i].Buy(money);
+                            PlaySound(cash);
+                        }
+                        else {
+                            PlaySound(buzzer);
+                        }
+                    }
+                    else {
+                        PlaySound(buzzer);
+                    }
                 }
             }
         }
@@ -160,38 +173,31 @@ int main() {
                 DrawText(TextFormat("%01i", shop[i].value), shop[i].position.x + shop[i].size.x - 30,
                          shop[i].position.y + shop[i].size.y - 25, 30,
                          shop[i].textColor);
-            }
-            else if (i == 1) {
+            } else if (i == 1) {
                 DrawText(TextFormat("%01i", shop[i].value), shop[i].position.x + shop[i].size.x - 40,
                          shop[i].position.y + shop[i].size.y - 25, 30,
                          shop[i].textColor);
-            }
-            else if (i == 2) {
+            } else if (i == 2) {
                 DrawText(TextFormat("%01i", shop[i].value), shop[i].position.x + shop[i].size.x - 50,
                          shop[i].position.y + shop[i].size.y - 25, 30,
                          shop[i].textColor);
-            }
-            else if (2 < i && i < 5) {
+            } else if (2 < i && i < 5) {
                 DrawText(TextFormat("%01i", shop[i].value), shop[i].position.x + shop[i].size.x - 60,
                          shop[i].position.y + shop[i].size.y - 25, 30,
                          shop[i].textColor);
-            }
-            else if (i == 5) {
+            } else if (i == 5) {
                 DrawText(TextFormat("%01i", shop[i].value), shop[i].position.x + shop[i].size.x - 70,
                          shop[i].position.y + shop[i].size.y - 25, 30,
                          shop[i].textColor);
-            }
-            else if (5 < i && i < 8) {
+            } else if (5 < i && i < 8) {
                 DrawText(TextFormat("%01i", shop[i].value), shop[i].position.x + shop[i].size.x - 75,
                          shop[i].position.y + shop[i].size.y - 25, 30,
                          shop[i].textColor);
-            }
-            else if (i == 8) {
+            } else if (i == 8) {
                 DrawText(TextFormat("%01i", shop[i].value), shop[i].position.x + shop[i].size.x - 80,
                          shop[i].position.y + shop[i].size.y - 25, 30,
                          shop[i].textColor);
-            }
-            else if (i == 9) {
+            } else if (i == 9) {
                 DrawText(TextFormat("%01i", shop[i].value), shop[i].position.x + shop[i].size.x - 100,
                          shop[i].position.y + shop[i].size.y - 25, 30,
                          shop[i].textColor);
